@@ -1,0 +1,41 @@
+<<<<<<< HEAD
+=======
+name: .NET Tests
+on:
+  push:
+    # usual branches plus the feature branch currently set as default
+    branches:
+      - main
+      - master
+      - feature/ci-tests-and-tests
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-|${{ runner.os }}-$(hashFiles('**/packages.lock.json','**/*.csproj'))
+          restore-keys: |
+            nuget-|${{ runner.os }}-
+
+      - name: Restore
+        run: dotnet restore Core.Tests/BikeMania.Core.Tests.csproj
+
+      - name: Test
+        run: dotnet test Core.Tests/BikeMania.Core.Tests.csproj --verbosity normal
+>>>>>>> a668cfd (ci: fix workflow YAML and add cache; include feature/ci-tests-and-tests trigger)
