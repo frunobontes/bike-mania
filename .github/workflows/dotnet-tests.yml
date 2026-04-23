@@ -1,0 +1,32 @@
+name: .NET Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Restore
+      run: dotnet restore "Bike Mania/BikeMania.sln" || true
+      # restore may fail if there is no solution; continue and restore individual projects
+
+    - name: Restore Core Tests
+      run: dotnet restore "Bike Mania/Core.Tests/BikeMania.Core.Tests.csproj"
+
+    - name: Run tests
+      run: |
+        dotnet test "Bike Mania/Core.Tests/BikeMania.Core.Tests.csproj" --no-build --verbosity normal
+      working-directory: .

@@ -1,0 +1,20 @@
+## Unity generated
+/Library/
+/Temp/
+/Obj/
+/Build/
+/Logs/
+/*.csproj
+/*.sln
+/*.user
+/*.userprefs
+/*.pidb
+/*.booproj
+/*.svd
+/*.pdb
+*.apk
+*.unitypackage
+
+# OS
+Thumbs.db
+.DS_Store
