@@ -1,20 +1,28 @@
-﻿name: .NET Tests
+name: .NET Tests
 on:
   push:
-    branches:  main, master 
+    branches:
+      - main
+      - feature/ci-tests-and-tests
   pull_request:
-    branches:  main, master 
+    branches:
+      - main
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-steps:
-- name: Checkout
-  uses: actions/checkout@v4
-- name: Setup .NET
-  uses: actions/setup-dotnet@v3
-  with:
-    dotnet-version: '6.0.x'
-- name: Restore Core Tests
-  run: dotnet restore "./Core.Tests/BikeMania.Core.Tests.csproj"
-- name: Run tests
-  run: dotnet test "./Core.Tests/BikeMania.Core.Tests.csproj" --no-build --verbosity normal
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Restore
+        run: dotnet restore Core.Tests/BikeMania.Core.Tests.csproj
+
+      - name: Test
+        run: dotnet test Core.Tests/BikeMania.Core.Tests.csproj --verbosity normal
+ 
