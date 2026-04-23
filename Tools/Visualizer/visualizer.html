@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Bike Mania - Simulation Visualizer</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    canvas { background: #222; display:block; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <h3>Bike Mania - Simulation Visualizer</h3>
+  <input type="file" id="file" accept=".csv" />
+  <br/>
+  <canvas id="c" width="800" height="400"></canvas>
+  <script>
+    const fileInput = document.getElementById('file');
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    let frames = [];
+    let t = 0;
+
+    fileInput.addEventListener('change', e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const reader = new FileReader();
+      reader.onload = () => parseCsv(reader.result);
+      reader.readAsText(f);
+    });
+
+    function parseCsv(txt) {
+      const lines = txt.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+      const hdr = lines.shift().split(',');
+      frames = lines.map(l => {
+        const cols = l.split(',');
+        return {
+          time: parseFloat(cols[0]),
+          x: parseFloat(cols[1]),
+          y: parseFloat(cols[2]),
+          angle: parseFloat(cols[5])
+        }
+      });
+      t = 0;
+      requestAnimationFrame(loop);
+    }
+
+    function loop() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      // draw ground grid
+      ctx.strokeStyle = '#333';
+      for (let gx=0; gx<canvas.width; gx+=40) { ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,canvas.height); ctx.stroke(); }
+      for (let gy=0; gy<canvas.height; gy+=40) { ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(canvas.width,gy); ctx.stroke(); }
+
+      if (frames.length === 0) { requestAnimationFrame(loop); return; }
+      // find frame by time
+      t += 1/60; // play at roughly 60fps
+      if (t > frames[frames.length-1].time) t = 0;
+
+      // linear interpolation
+      let i = 0;
+      while (i < frames.length-1 && frames[i+1].time < t) i++;
+      const a = frames[i];
+      const b = frames[Math.min(i+1, frames.length-1)];
+      const alpha = (t - a.time) / Math.max(0.0001, (b.time - a.time));
+      const x = a.x * (1-alpha) + b.x * alpha;
+      const y = a.y * (1-alpha) + b.y * alpha;
+      const angle = a.angle * (1-alpha) + b.angle * alpha;
+
+      // world->screen: simple transform
+      const sx = 50 + x * 20;
+      const sy = canvas.height/2 - y * 20;
+
+      // draw bike as triangle
+      ctx.save();
+      ctx.translate(sx, sy);
+      ctx.rotate(angle);
+      ctx.fillStyle = '#ffcc00';
+      ctx.beginPath(); ctx.moveTo(15,0); ctx.lineTo(-10,8); ctx.lineTo(-10,-8); ctx.closePath(); ctx.fill();
+      ctx.restore();
+
+      requestAnimationFrame(loop);
+    }
+  </script>
+</body>
+</html>

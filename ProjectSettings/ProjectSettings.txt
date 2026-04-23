@@ -1,0 +1,1 @@
+# ProjectSettings are not included. Open this folder in Unity to generate ProjectSettings files.

@@ -1,0 +1,8 @@
+{
+  "Spawn": { "X": 0, "Y": 1, "Rotation": 0 },
+  "Checkpoints": [ { "X": 10, "Y": 2 }, { "X": 25, "Y": 3 } ],
+  "Track": [
+    { "X": 0, "Y": 0, "Width": 20, "Height": 1, "Type": "ground" },
+    { "X": 20, "Y": 0.5, "Width": 10, "Height": 1, "Type": "ramp" }
+  ]
+}
